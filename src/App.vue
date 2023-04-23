@@ -1,114 +1,43 @@
 <template>
   <div class="container mt-4 border border-3">
-
-    <div class="row text-center border">
-      <h3 class="bg-danger py-1 mb-4">掲示板に投稿する</h3>
-      <!-- <form> -->
-        <div class="mb-3">
-          <label for="name" class="form-label d-block">ニックネーム：</label>
-          <input id="name" name="name" type="text" class="form-controll" 
-            v-model="name"
-          >
-        </div>
-        <div class="mb-3">
-          <label for="comment" class="form-label d-block">コメント<span>：</span></label>
-          <textarea id="comment" name="comment" cols="30" rows="5" class="form-controll d-inline-block mx-1" 
-            v-model="comment"
-          ></textarea>
-        </div>
-        <div class="mb-3">
-          <button type="submit" name="commentBtn" value="true" class="btn btn-secondary btn-sm"
-            @click="createComment()"
-          >コメントをサーバーに送る</button>
-        </div>
-      <!-- </form> -->
-    </div>
-
-
-    <div class="row border">
-      <h2 class="bg-warning mb-4 text-center">掲示板</h2>
-
-      <div class="board-div">
-        <div class="border bg-white my-4" 
-          v-for='post in posts' 
-          :key='post.name'
-        >
-          <div class="mark m-1 p-2">
-            <pre class="title-pre align-top mb-0">【名前】</pre>
-            <pre class="content-pre mb-0">{{ post.fields.name.stringValue }}</pre>
-          </div>
-          <div class="mark m-1 p-2">
-            <pre class="title-pre align-top">【コメント】</pre>
-            <pre class="content-pre">{{ post.fields.comment.stringValue }}</pre>
-          </div>
-        </div>
-      </div>
-    </div>
-    
+    <header class="text-center mt-4">
+      <template v-if="isAuthenticated">
+        <router-link to="/"         class="mx-3 header-item">掲示板</router-link>
+      </template>
+      <template v-if="isAuthenticated">
+        <span class="mx-3 header-item text-primary text-decoration-underline" 
+          @click="logout()">ログアウト</span>
+      </template>
+      <template v-if="!isAuthenticated">
+        <router-link to="/login"    class="mx-3 header-item">ログイン</router-link>
+        <router-link to="/register" class="mx-3 header-item">登録</router-link>
+      </template>
+    </header>
+    <router-view></router-view>
   </div>
 
 </template>
 
 <script>
-  // import axios from 'axios'
-  import axios from './axios-auth'
-  import './assets/animate.css/animate.min.css'
-  import './assets/css/style.css'
-
   export default {
-    name: 'App',
-    components: {
-      // HelloWorld
-    },
-    data: () => ({
-      name    : "",
-      comment : "",
-      posts    : [],
-    }),
-    created() {
-      axios.get(
-        '/comments',
-      )
-      // .catch(error => )
-      .then(response => {
-        this.posts = response.data.documents;
-        // console.log(response);
-        // console.log(response.data.documents);
-      })
+    computed: {
+      isAuthenticated() {
+        return this.$store.getters.idToken !== null;
+      },
     },
     methods: {
-      createComment() {
-        // プロミスを返す非同期処理
-        axios.post(
-          '/comments',
-          {
-            fields : {
-              name : {
-                stringValue : this.name
-              },
-              comment : {
-                stringValue : this.comment
-              }
-            }
-          }
-        )
-        // .then(response => {
-        //   console.log(response);
-        // })
-        // .catch(error => {
-        //   console.log(error);
-        // });
-        this.name     = "";
-        this.comment  = "";
-      }
-    }
+      logout () {
+        this.$store.dispatch('logout');
+      },
+    },
   }
 </script>
 
 <style scoped>
-  /* pre {
-    white-space: pre-wrap;
-  } */
+  .header-item {
+    padding : 5px;
+    cursor  : pointer;
+  }
 
   .border {
     background-color: ghostwhite;

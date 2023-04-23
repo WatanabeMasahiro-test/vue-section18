@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import axios from 'axios'
 import router from './router/index'
-// import store from './store/index'
+import store from './store/index'
 
 axios.defaults.baseURL = 'https://firestore.googleapis.com/v1/projects/vue-section17-11717/databases/(default)/documents';
 
@@ -26,7 +26,9 @@ const interceptorsResponse = axios.interceptors.response.use(
 axios.interceptors.request.eject(interceptorsRequest);
 axios.interceptors.response.eject(interceptorsResponse);
 
+store.dispatch('autoLogin');
+
 createApp(App)
     .use(router)
-    // .use(store)
+    .use(store)
 .mount('#app')
